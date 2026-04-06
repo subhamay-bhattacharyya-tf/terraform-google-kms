@@ -171,7 +171,6 @@ The repository variables required by the CI workflow are:
 | `GCP_PROJECT_ID` | GCP project ID passed as `GOOGLE_CLOUD_PROJECT` to Terratest |
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | Full WIF provider resource name |
 | `GCP_SERVICE_ACCOUNT` | Service account email to impersonate |
-| `GCP_KMS_KEY_RING` | Name of the pre-existing KMS key ring used by Terratest |
 
 ---
 

@@ -11,6 +11,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	testRegion      = "us-central1"
+	testKeyRingName = "terratest-kms-key-ring"
+)
+
 // TestKMSCryptoKeyBasic tests creating a basic KMS crypto key.
 func TestKMSCryptoKeyBasic(t *testing.T) {
 	t.Parallel()
@@ -19,7 +24,10 @@ func TestKMSCryptoKeyBasic(t *testing.T) {
 	unique := strings.ToLower(random.UniqueId())
 	baseName := fmt.Sprintf("tt-kms-%s", unique)
 	projectID := mustEnv(t, "GOOGLE_CLOUD_PROJECT")
-	keyRingName := mustEnv(t, "GCP_KMS_KEY_RING")
+
+	// Ensure the test key ring exists (key rings cannot be deleted in GCP,
+	// so we create once and reuse across test runs).
+	ensureKeyRingExists(t, projectID, testRegion, testKeyRingName)
 
 	tfOptions := &terraform.Options{
 		TerraformDir: "..",
@@ -27,11 +35,11 @@ func TestKMSCryptoKeyBasic(t *testing.T) {
 		Vars: map[string]interface{}{
 			"environment":  "devl",
 			"project_code": "tt",
-			"region":       "us-central1",
+			"region":       testRegion,
 			"kms_crypto_key_config": map[string]interface{}{
 				"base_name":     baseName,
-				"key_ring_name": keyRingName,
-				"location":      "us-central1",
+				"key_ring_name": testKeyRingName,
+				"location":      testRegion,
 			},
 		},
 	}
@@ -56,6 +64,4 @@ func TestKMSCryptoKeyBasic(t *testing.T) {
 
 	keyID := terraform.Output(t, tfOptions, "key_id")
 	cryptoKeyExists(t, client, keyID)
-
-	_ = projectID // used via ADC credentials
 }
