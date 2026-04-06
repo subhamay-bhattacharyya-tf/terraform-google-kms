@@ -20,7 +20,7 @@ Generate all files in the `/` directory following the template spec, delegating 
 ## Delegation Map
 
 | File / Section | Skill to invoke |
-|---|---|
+| --- | --- |
 | `variables.tf` | **`tf-mod-vars`** — follow its variable authoring patterns, validation rules, and GCP provider reference for the `kms_crypto_key_config` object |
 | `main.tf` | **`tf-mod-main`** — follow its core authoring patterns and GCP provider reference for the `google_kms_crypto_key` resource |
 | `examples/` | **`tf-mod-examples`** — follow its example matrix and file-structure rules to scaffold all example directories |

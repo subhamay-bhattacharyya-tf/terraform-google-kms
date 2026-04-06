@@ -59,7 +59,7 @@ variable "resource_configs" {
 ### Required vs Optional Fields
 
 | Pattern | When to Use |
-|---|---|
+| --- | --- |
 | `field = string` | Always required; no default possible |
 | `field = optional(string, "val")` | Has a sensible default |
 | `field = optional(string, null)` | Truly optional; omitted when null |
@@ -193,7 +193,7 @@ values, and complete examples.
 ### Common Field Types & Allowed Values
 
 | Field | Type | Notes / Common Values |
-|---|---|---|
+| --- | --- | --- |
 | `region` | `string` | `us-east-1`, `us-west-2`, `eu-west-1`, `ap-southeast-1`, etc. |
 | `environment` | `string` | `dev`, `staging`, `prod` |
 | `instance_type` | `string` | `t3.micro`, `m5.large`, `c5.xlarge`, etc. |
@@ -256,7 +256,7 @@ module "s3_buckets" {
 ### Common Field Types & Allowed Values
 
 | Field | Type | Notes / Common Values |
-|---|---|---|
+| --- | --- | --- |
 | `project_id` | `string` | GCP project ID string (not project number) |
 | `region` | `string` | `us-central1`, `us-east1`, `europe-west1`, `asia-east1`, etc. |
 | `zone` | `string` | `us-central1-a`, `us-central1-b`, etc. |
@@ -330,7 +330,7 @@ module "kms_crypto_key" {
 ### Common Field Types & Allowed Values
 
 | Field | Type | Notes / Common Values |
-|---|---|---|
+| --- | --- | --- |
 | `resource_group_name` | `string` | Must already exist or be created separately |
 | `location` | `string` | `eastus`, `westus2`, `westeurope`, `southeastasia`, etc. |
 | `tags` | `map(string)` | Azure limits 50 tags per resource |
@@ -407,7 +407,7 @@ module "storage_accounts" {
 ### `table_configs` Variable Schema
 
 | Field | Type | Required | Default |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `database` | `string` | ✅ | — |
 | `schema` | `string` | ✅ | — |
 | `name` | `string` | ✅ | — |
@@ -467,7 +467,7 @@ grants = [
 ### Table Type Guidance
 
 | Type | Fail-safe | Time Travel | Use Case |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `PERMANENT` | ✅ | Up to 90 days | Production tables |
 | `TRANSIENT` | ❌ | 0 or 1 day | Staging / intermediate tables |
 | `TEMPORARY` | ❌ | 0 or 1 day | Session-scoped scratch tables |
@@ -475,7 +475,7 @@ grants = [
 ### Snowflake Data Types Quick Reference
 
 | Category | Examples |
-|---|---|
+| --- | --- |
 | Numeric | `NUMBER(p,s)`, `INT`, `FLOAT`, `DOUBLE` |
 | String | `VARCHAR(n)`, `STRING`, `TEXT` |
 | Date/Time | `DATE`, `TIME`, `TIMESTAMP_NTZ`, `TIMESTAMP_LTZ`, `TIMESTAMP_TZ` |

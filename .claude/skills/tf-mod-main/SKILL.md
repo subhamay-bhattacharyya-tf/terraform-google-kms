@@ -298,7 +298,7 @@ resource "aws_s3_object" "bucket_keys" {
 ### SSE Algorithm Values
 
 | Value | Encryption Type | KMS Key Required |
-|---|---|---|
+| --- | --- | --- |
 | `"AES256"` | SSE-S3 (AWS-managed) | No |
 | `"aws:kms"` | SSE-KMS (CMK) | Yes — via `kms_key_alias` |
 | `null` | No encryption configured | No |
@@ -395,7 +395,7 @@ resource "google_kms_crypto_key" "this" {
 ### KMS Purpose vs Algorithm Compatibility
 
 | Purpose | Valid Algorithms |
-|---|---|
+| --- | --- |
 | `ENCRYPT_DECRYPT` | `GOOGLE_SYMMETRIC_ENCRYPTION` |
 | `ASYMMETRIC_SIGN` | `RSA_SIGN_PSS_2048_SHA256`, `RSA_SIGN_PSS_3072_SHA256`, `RSA_SIGN_PSS_4096_SHA256`, `EC_SIGN_P256_SHA256`, `EC_SIGN_P384_SHA384` |
 | `ASYMMETRIC_DECRYPT` | `RSA_DECRYPT_OAEP_2048_SHA256`, `RSA_DECRYPT_OAEP_3072_SHA256`, `RSA_DECRYPT_OAEP_4096_SHA256` |
@@ -404,7 +404,7 @@ resource "google_kms_crypto_key" "this" {
 ### Protection Level Notes
 
 | Level | Notes |
-|---|---|
+| --- | --- |
 | `SOFTWARE` | Default; keys stored in software |
 | `HSM` | Keys stored in hardware security module; higher cost |
 | `EXTERNAL` | Keys managed externally via EKM; not compatible with rotation |
@@ -475,7 +475,7 @@ resource "azurerm_storage_account_network_rules" "this" {
 ### Azure Account Tier vs Replication Matrix
 
 | Tier | Valid Replication Types |
-|---|---|
+| --- | --- |
 | `Standard` | `LRS`, `ZRS`, `GRS`, `RAGRS`, `GZRS`, `RAGZRS` |
 | `Premium` | `LRS`, `ZRS` only |
 
@@ -562,7 +562,7 @@ resource "snowflake_table_grant" "this" {
 ### Key Snowflake Resource Attributes
 
 | Attribute | Notes |
-|---|---|
+| --- | --- |
 | `data_retention_days` | Maps to `data_retention_time_in_days` in the variable |
 | `change_tracking` | Enables Snowflake CDC streams on the table |
 | `cluster_by` | List of column expressions; avoid over-clustering small tables |

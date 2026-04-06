@@ -32,7 +32,7 @@ meaningful feature combination.
 For each optional field in the root `kms_crypto_key_config` object (or equivalent), record:
 
 | Axis | Values |
-|---|---|
+| --- | --- |
 | `purpose` | `ENCRYPT_DECRYPT`, `ASYMMETRIC_SIGN`, `ASYMMETRIC_DECRYPT`, `MAC` |
 | `algorithm` | `GOOGLE_SYMMETRIC_ENCRYPTION`, `RSA_SIGN_PSS_2048_SHA256`, `EC_SIGN_P256_SHA256`, `HMAC_SHA256` |
 | `protection_level` | `SOFTWARE`, `HSM`, `EXTERNAL` |
@@ -48,7 +48,7 @@ Do **not** generate the full cartesian product. Instead produce these named
 examples, each exercising a distinct capability or realistic deployment pattern:
 
 | Directory | Purpose | Key axes exercised |
-|---|---|---|
+| --- | --- | --- |
 | `basic/` | Minimal — symmetric encryption key | `purpose=ENCRYPT_DECRYPT`, software protection, no rotation |
 | `with-rotation/` | Auto-rotation every 90 days | `rotation_period=7776000s` |
 | `with-annual-rotation/` | Annual rotation | `rotation_period=31536000s` |
@@ -143,6 +143,6 @@ After writing all files:
 After all files are written and validated, print a table:
 
 | Example | Files written | Validated |
-|---|---|---|
+| --- | --- | --- |
 | `basic/` | 4 | ✓ |
 | ... | ... | ... |
