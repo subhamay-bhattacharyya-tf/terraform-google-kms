@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"cloud.google.com/go/storage"
+	kms "cloud.google.com/go/kms/apiv1"
+	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/api/iterator"
 )
 
 // mustEnv retrieves a required environment variable, failing the test if absent.
@@ -20,49 +20,19 @@ func mustEnv(t *testing.T, key string) string {
 	return v
 }
 
-// newGCSClient creates an authenticated GCS client.
-func newGCSClient(t *testing.T) *storage.Client {
+// newKMSClient creates an authenticated Cloud KMS client.
+func newKMSClient(t *testing.T) *kms.KeyManagementClient {
 	t.Helper()
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx)
-	require.NoError(t, err, "Failed to create GCS client")
+	client, err := kms.NewKeyManagementClient(ctx)
+	require.NoError(t, err, "Failed to create KMS client")
 	return client
 }
 
-// bucketExists reports whether the named bucket is accessible.
-func bucketExists(t *testing.T, client *storage.Client, bucketName string) bool {
+// cryptoKeyExists verifies the crypto key with the given resource name exists.
+func cryptoKeyExists(t *testing.T, client *kms.KeyManagementClient, keyID string) {
 	t.Helper()
 	ctx := context.Background()
-	_, err := client.Bucket(bucketName).Attrs(ctx)
-	return err == nil
-}
-
-// fetchBucketAttrs returns the GCS BucketAttrs for the named bucket.
-func fetchBucketAttrs(t *testing.T, client *storage.Client, bucketName string) *storage.BucketAttrs {
-	t.Helper()
-	ctx := context.Background()
-	attrs, err := client.Bucket(bucketName).Attrs(ctx)
-	require.NoError(t, err, "Failed to get bucket attributes for %s", bucketName)
-	return attrs
-}
-
-// listBucketObjects returns the object keys in the named bucket.
-func listBucketObjects(t *testing.T, client *storage.Client, bucketName string) []string {
-	t.Helper()
-	ctx := context.Background()
-	var keys []string
-	it := client.Bucket(bucketName).Objects(ctx, nil)
-	for {
-		obj, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		require.NoError(t, err, "Failed to list objects in bucket %s", bucketName)
-		keys = append(keys, obj.Name)
-	}
-	return keys
-}
-
-func stringPtr(s string) *string {
-	return &s
+	_, err := client.GetCryptoKey(ctx, &kmspb.GetCryptoKeyRequest{Name: keyID})
+	require.NoError(t, err, "Expected KMS crypto key %s to exist: %v", keyID, err)
 }

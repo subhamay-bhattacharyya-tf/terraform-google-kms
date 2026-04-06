@@ -1,43 +1,28 @@
 # ============================================================================
-# GCS Bucket Module - Outputs
+# KMS Crypto Key Module - Outputs
 # ============================================================================
 
-output "bucket_id" {
-  description = "The ID of the GCS bucket."
-  value       = google_storage_bucket.this.id
+output "key_id" {
+  description = "The globally unique identifier for the KMS crypto key."
+  value       = google_kms_crypto_key.this.id
 }
 
-output "bucket_name" {
-  description = "The name of the GCS bucket."
-  value       = google_storage_bucket.this.name
+output "key_name" {
+  description = "The name of the KMS crypto key."
+  value       = google_kms_crypto_key.this.name
 }
 
-output "bucket_project" {
-  description = "The project ID where the bucket is created."
-  value       = google_storage_bucket.this.project
+output "key_ring" {
+  description = "The key ring that this crypto key belongs to."
+  value       = google_kms_crypto_key.this.key_ring
 }
 
-output "bucket_location" {
-  description = "The location of the GCS bucket."
-  value       = google_storage_bucket.this.location
+output "key_purpose" {
+  description = "The immutable purpose of the KMS crypto key."
+  value       = google_kms_crypto_key.this.purpose
 }
 
-output "bucket_url" {
-  description = "The URL of the GCS bucket."
-  value       = google_storage_bucket.this.url
-}
-
-output "bucket_self_link" {
-  description = "The self link of the GCS bucket resource."
-  value       = google_storage_bucket.this.self_link
-}
-
-output "bucket_storage_class" {
-  description = "The storage class of the GCS bucket."
-  value       = google_storage_bucket.this.storage_class
-}
-
-output "bucket_force_destroy" {
-  description = "Whether force_destroy is enabled for the GCS bucket."
-  value       = google_storage_bucket.this.force_destroy
+output "primary_version" {
+  description = "The resource name of the primary version of the KMS crypto key."
+  value       = try(google_kms_crypto_key.this.primary[0].name, null)
 }

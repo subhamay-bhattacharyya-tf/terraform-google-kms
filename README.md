@@ -1,81 +1,180 @@
-# Terraform Module for GCS Bucket
+# terraform-google-kms
 
-![Release](https://github.com/subhamay-bhattacharyya-tf/terraform-google-module-template/actions/workflows/ci.yaml/badge.svg)&nbsp;![GCP](https://img.shields.io/badge/GCP-4285F4?logo=googlecloud&logoColor=white)&nbsp;![Commit Activity](https://img.shields.io/github/commit-activity/t/subhamay-bhattacharyya-tf/terraform-google-module-template)&nbsp;![Last Commit](https://img.shields.io/github/last-commit/subhamay-bhattacharyya-tf/terraform-google-module-template)&nbsp;![Release Date](https://img.shields.io/github/release-date/subhamay-bhattacharyya-tf/terraform-google-module-template)&nbsp;![Repo Size](https://img.shields.io/github/repo-size/subhamay-bhattacharyya-tf/terraform-google-module-template)&nbsp;![File Count](https://img.shields.io/github/directory-file-count/subhamay-bhattacharyya-tf/terraform-google-module-template)&nbsp;![Issues](https://img.shields.io/github/issues/subhamay-bhattacharyya-tf/terraform-google-module-template)&nbsp;![Top Language](https://img.shields.io/github/languages/top/subhamay-bhattacharyya-tf/terraform-google-module-template)&nbsp;![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code-623CE4?logo=anthropic&logoColor=white)&nbsp;![Custom Endpoint](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/bsubhamay/476e6e7583432e960e6de16d5223e6a3/raw/terraform-google-module-template.json?)
+![Release](https://github.com/subhamay-bhattacharyya-tf/terraform-google-kms/actions/workflows/ci.yaml/badge.svg)&nbsp;![GCP](https://img.shields.io/badge/GCP-4285F4?logo=googlecloud&logoColor=white)&nbsp;![Commit Activity](https://img.shields.io/github/commit-activity/t/subhamay-bhattacharyya-tf/terraform-google-kms)&nbsp;![Last Commit](https://img.shields.io/github/last-commit/subhamay-bhattacharyya-tf/terraform-google-kms)&nbsp;![Release Date](https://img.shields.io/github/release-date/subhamay-bhattacharyya-tf/terraform-google-kms)&nbsp;![Repo Size](https://img.shields.io/github/repo-size/subhamay-bhattacharyya-tf/terraform-google-kms)&nbsp;![File Count](https://img.shields.io/github/directory-file-count/subhamay-bhattacharyya-tf/terraform-google-kms)&nbsp;![Issues](https://img.shields.io/github/issues/subhamay-bhattacharyya-tf/terraform-google-kms)&nbsp;![Top Language](https://img.shields.io/github/languages/top/subhamay-bhattacharyya-tf/terraform-google-kms)&nbsp;![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code-623CE4?logo=anthropic&logoColor=white)&nbsp;![Custom Endpoint](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/bsubhamay/476e6e7583432e960e6de16d5223e6a3/raw/terraform-google-kms.json?)&nbsp;![Terraform Version](https://img.shields.io/badge/terraform-%3E%3D1.3-blue)&nbsp;![Provider Version](https://img.shields.io/badge/google-%3E%3D7.23-blue)
 
-A Terraform module for creating and managing a **Google Cloud Storage (GCS) bucket** on GCP.
+Terraform module for creating and managing a Google Cloud KMS Crypto Key.
+
+---
 
 ## Overview
 
-This module provisions a single `google_storage_bucket` resource via the `terraform-google-module-template` module. It accepts a small set of flat input variables and assembles the required `gcs_config` object, enforcing `uniform_bucket_level_access = true` and `public_access_prevention = "enforced"` by default.
+This module provisions a single `google_kms_crypto_key` resource inside an existing Cloud KMS key ring. It supports all four key purposes (symmetric encryption, asymmetric signing, asymmetric decryption, and MAC signing), configurable protection levels (SOFTWARE, HSM, EXTERNAL), optional automatic rotation, and custom scheduled-destroy durations. The key name is derived automatically from the `project_code`, `base_name`, `location`, and `environment` inputs following a consistent naming convention.
 
-## Requirements
-
-| Requirement | Version |
-|---|---|
-| Terraform | >= 1.3.0 |
-| Google Provider | >= 7.23.0 |
+---
 
 ## Usage
 
 ```hcl
-module "gcs_bucket" {
-  source = "github.com/subhamay-bhattacharyya-tf/terraform-google-module-template"
+module "kms_crypto_key" {
+  source = "github.com/subhamay-bhattacharyya-tf/terraform-google-kms"
 
-  bucket_name = "my-portfolio-bucket"
-  project_id  = "portfolio-site"
-  location    = "US"
-  environment = "prod"
+  environment  = "devl"
+  project_code = "demo"
+  region       = "us-central1"
+
+  kms_crypto_key_config = {
+    base_name       = "my-key"
+    key_ring_name   = "my-key-ring"
+    location        = "us-central1"
+    rotation_period = "7776000s"
+    labels = {
+      env  = "devl"
+      team = "platform"
+    }
+  }
 }
 ```
 
-## Input Variables
+---
+
+## Requirements
+
+| Name      | Version   |
+|-----------|-----------|
+| terraform | >= 1.3.0  |
+| google    | >= 7.23.0 |
+
+**Additional prerequisites:**
+
+- An existing Cloud KMS key ring in the target project and location.
+- GCP credentials with `cloudkms.cryptoKeys.create` and `cloudkms.cryptoKeys.get` permissions on the target key ring.
+
+---
+
+## Inputs
+
+<!-- AUTO-GENERATED by terraform-docs — do not edit manually -->
 
 | Name | Description | Type | Default | Required |
-|---|---|---|---|---|
-| `bucket_name` | Name of the GCS bucket | `string` | — | yes |
-| `project_id` | GCP project ID | `string` | `"portfolio-site"` | no |
-| `region` | GCP region | `string` | `"us-central1"` | no |
-| `location` | GCS bucket location | `string` | `"US"` | no |
-| `storage_class` | Storage class | `string` | `"STANDARD"` | no |
-| `force_destroy` | Force-destroy bucket on destroy | `bool` | `false` | no |
-| `versioning` | Enable object versioning | `bool` | `false` | no |
-| `labels` | Additional labels | `map(string)` | `{}` | no |
-| `project` | Project label value | `string` | `"portfolio-site"` | no |
-| `environment` | Environment label value | `string` | `"dev"` | no |
+|------|-------------|------|---------|:--------:|
+| environment | Deployment environment. One of: devl, test, prod. | `string` | n/a | **yes** |
+| project\_code | Short project identifier used in resource naming. | `string` | n/a | **yes** |
+| region | GCP region for the provider. | `string` | `"us-central1"` | no |
+| kms\_crypto\_key\_config | Configuration object for the Google KMS Crypto Key. | `object(...)` | n/a | **yes** |
+
+### `kms_crypto_key_config` Object Attributes
+
+| Attribute | Type | Default | Required | Description |
+|-----------|------|---------|:--------:|-------------|
+| base\_name | `string` | n/a | **yes** | Key name segment. Lowercase alphanumeric and dashes, max 30 chars. |
+| key\_ring\_name | `string` | n/a | **yes** | Name of the existing Cloud KMS key ring. |
+| location | `string` | `"us-central1"` | no | GCP location of the key ring. |
+| purpose | `string` | `"ENCRYPT_DECRYPT"` | no | One of: `ENCRYPT_DECRYPT`, `ASYMMETRIC_SIGN`, `ASYMMETRIC_DECRYPT`, `MAC`. |
+| algorithm | `string` | `"GOOGLE_SYMMETRIC_ENCRYPTION"` | no | Version template algorithm. Must be compatible with `purpose`. |
+| protection\_level | `string` | `"SOFTWARE"` | no | One of: `SOFTWARE`, `HSM`, `EXTERNAL`. |
+| rotation\_period | `string` | `null` | no | Auto-rotation interval in seconds (e.g. `"7776000s"`). Only valid for `ENCRYPT_DECRYPT`. |
+| destroy\_scheduled\_duration | `string` | `null` | no | Time before a scheduled key version is permanently destroyed (e.g. `"86400s"`). |
+| labels | `map(string)` | `{}` | no | GCP labels to attach to the key. |
+
+---
 
 ## Outputs
 
+<!-- AUTO-GENERATED by terraform-docs — do not edit manually -->
+
 | Name | Description |
-|---|---|
-| `bucket_id` | The ID of the GCS bucket |
-| `bucket_name` | The name of the GCS bucket |
-| `bucket_project` | The project ID where the bucket is created |
-| `bucket_location` | The location of the GCS bucket |
-| `bucket_url` | The URL of the GCS bucket |
-| `bucket_self_link` | The self link of the GCS bucket resource |
-| `bucket_storage_class` | The storage class of the GCS bucket |
-| `bucket_force_destroy` | Whether force_destroy is enabled |
+|------|-------------|
+| key\_id | The globally unique identifier for the KMS crypto key. |
+| key\_name | The name of the KMS crypto key. |
+| key\_ring | The key ring that this crypto key belongs to. |
+| key\_purpose | The immutable purpose of the KMS crypto key. |
+| primary\_version | The resource name of the primary version of the KMS crypto key. |
+
+---
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [google\_kms\_crypto\_key.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/kms_crypto_key) | resource |
+| [google\_kms\_key\_ring.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/kms_key_ring) | data source |
+
+---
+
+## Examples
+
+> Each example is a standalone, runnable Terraform configuration stored in `examples/<name>/` with its own `README.md` and terraform validation.
+
+| Example | Description |
+|---------|-------------|
+| [basic](examples/basic/) | Minimal symmetric encryption key with all defaults |
+| [with-rotation](examples/with-rotation/) | Auto-rotation every 90 days |
+| [with-annual-rotation](examples/with-annual-rotation/) | Auto-rotation every 365 days |
+| [asymmetric-sign](examples/asymmetric-sign/) | EC P-256 asymmetric signing key |
+| [asymmetric-decrypt](examples/asymmetric-decrypt/) | RSA 2048 asymmetric decryption key |
+| [mac-signing](examples/mac-signing/) | HMAC-SHA256 MAC signing key |
+| [hsm-protected](examples/hsm-protected/) | HSM-backed key with rotation |
+| [with-labels](examples/with-labels/) | Key with GCP resource labels |
+| [with-destroy-schedule](examples/with-destroy-schedule/) | Custom 1-day destroy schedule |
+| [complete](examples/complete/) | All features: HSM, rotation, labels, destroy schedule |
+
+---
+
+## Notes & Caveats
+
+> **Destructive operation:** `terraform destroy` schedules crypto key versions for destruction. The key material is permanently deleted after `destroy_scheduled_duration` (default: 24 hours per GCP policy). This cannot be undone.
+
+- `rotation_period` is only valid when `purpose = "ENCRYPT_DECRYPT"`. The module enforces this with a validation block.
+- `EXTERNAL` protection level keys require a Cloud EKM configuration and cannot use automatic rotation.
+- HSM keys incur additional GCP costs. See [Cloud KMS pricing](https://cloud.google.com/kms/pricing).
+- The key ring must exist before applying this module. This module does not create key rings.
+- The generated key name follows the pattern: `<project_code>-<base_name>-<location>-<environment>`.
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for full guidelines.
+
+```bash
+# Quick start
+git clone git@github.com:subhamay-bhattacharyya-tf/terraform-google-kms.git
+cd terraform-google-kms
+terraform fmt -recursive
+terraform init -backend=false
+terraform validate
+```
+
+1. Fork the repository and create a feature branch (`git checkout -b feat/my-feature`)
+2. Run `terraform fmt`, `terraform validate`, and `terraform-docs .`
+3. Add or update tests under `test/` (Terratest)
+4. Open a pull request against `main` with a clear description of changes
+
+---
 
 ## CI / Workload Identity Federation Setup
 
-The Terratest job authenticates to GCP via [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation) (service account impersonation). If the job fails with `Permission 'iam.serviceAccounts.getAccessToken' denied`, grant the WIF pool principal the required IAM binding:
+The Terratest job authenticates to GCP via [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation). If the job fails with `Permission 'iam.serviceAccounts.getAccessToken' denied`, grant the WIF pool principal the required IAM binding:
 
 ```bash
 gcloud iam service-accounts add-iam-policy-binding \
-    "sa-17-cloud-storage@prj-17-cloud-storage-16748.iam.gserviceaccount.com" \
-    --project="prj-17-cloud-storage-16748" \
+    "<service-account-email>" \
+    --project="<gcp-project-id>" \
     --role="roles/iam.workloadIdentityUser" \
-    --member="principalSet://iam.googleapis.com/projects/578842011545/locations/global/workloadIdentityPools/github-actions/attribute.repository/subhamay-bhattacharyya-tf/terraform-google-module-template"
+    --member="principalSet://iam.googleapis.com/projects/<project-number>/locations/global/workloadIdentityPools/<pool-name>/attribute.repository/<github-org>/terraform-google-kms"
 ```
 
-The three repository variables required by the CI workflow are:
+The repository variables required by the CI workflow are:
 
 | Variable | Description |
-| --- | --- |
+|----------|-------------|
 | `GCP_PROJECT_ID` | GCP project ID passed as `GOOGLE_CLOUD_PROJECT` to Terratest |
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | Full WIF provider resource name |
 | `GCP_SERVICE_ACCOUNT` | Service account email to impersonate |
+| `GCP_KMS_KEY_RING` | Name of the pre-existing KMS key ring used by Terratest |
+
+---
 
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE).
+MIT © 2026 Subhamay Bhattacharyya — see [LICENSE](./LICENSE) for full terms.

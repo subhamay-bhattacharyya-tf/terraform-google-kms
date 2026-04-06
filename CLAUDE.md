@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this module does
 
-This is a **Terraform module** that creates and manages a single `google_storage_bucket` resource on GCP. The entire public interface is one input variable (`gcs_config`) and eight outputs (id, name, project, location, url, self_link, storage_class, force_destroy). This will be used as a GitHub Repository Template. The actual modules with me implemented seperately.
+This is a **Terraform module** that creates and manages a single `google_kms_crypto_key` resource on GCP. The entire public interface is one input variable (`kms_crypto_key_config`) and standard outputs (id, name, key_ring, purpose, primary_version). This will be used as a GitHub Repository Template. The actual modules with me implemented seperately.
 
 ## Common commands
 
@@ -19,7 +19,7 @@ terraform init -backend=false && terraform validate
 cd examples/bucket/basic && terraform init -backend=false && terraform validate
 
 # Run Terratest integration test (requires GCP auth + GOOGLE_CLOUD_PROJECT env var)
-cd test && go test -v -timeout 30m -run TestGCSBucketBasic ./gcs_bucket_basic_test.go ./helpers_test.go
+cd test && go test -v -timeout 30m -run TestKMSCryptoKeyBasic ./kms_crypto_key_basic_test.go ./helpers_test.go
 
 # Install local dev tools (Linux/devcontainer only)
 bash install-tools.sh
@@ -34,15 +34,15 @@ pre-commit run --all-files
 
 ```text
 .                      # Root module — the publishable Terraform module
-├── main.tf            # Single google_storage_bucket resource
-├── variables.tf       # gcs_config object variable with all validations
-├── outputs.tf         # Eight bucket attribute outputs
+├── main.tf            # Single google_kms_crypto_key resource
+├── variables.tf       # kms_crypto_key_config object variable with all validations
+├── outputs.tf         # Key attribute outputs (id, name, key_ring, purpose, primary_version)
 ├── versions.tf        # Terraform >= 1.3.0, google provider >= 7.23.0
 ├── examples/
-│   └── bucket/basic/  # Reference usage; CI validates this separately
+│   └── basic/         # Reference usage; CI validates this separately
 └── test/
-    ├── gcs_bucket_basic_test.go   # Terratest: creates real bucket, asserts outputs, destroys
-    └── helpers_test.go            # Shared test helpers (currently AWS-flavoured — leftover from template)
+    ├── kms_crypto_key_basic_test.go   # Terratest: creates real KMS crypto key, asserts outputs, destroys
+    └── helpers_test.go                # Shared test helpers (currently AWS-flavoured — leftover from template)
 ```
 
 ## Key Conventions
@@ -53,7 +53,7 @@ pre-commit run --all-files
 - Site content changes deploy automatically via GitHub Actions on push to main
 - This Terraform module only sccept one input of object type
 
-The module uses a single structured `gcs_config` object rather than flat variables. All validation (naming rules, storage class enum, project ID format, public access prevention values) lives in `variables.tf`.
+The module uses a single structured `kms_crypto_key_config` object rather than flat variables. All validation (naming rules, purpose enum, protection level enum, project ID format) lives in `variables.tf`.
 
 ## CI pipeline (`.github/workflows/ci.yaml`)
 
@@ -77,5 +77,5 @@ Follows **Conventional Commits** — semantic-release uses this to determine the
 ## Known inconsistencies (leftover from template)
 
 - `README.md` describes a GCP project-hierarchy module — it is stale and does not reflect this module.
-- `test/helpers_test.go` contains AWS S3 helpers; `test/go.mod` references `terraform-aws-s3`. These are unused by the GCS test and should be replaced with GCS-specific helpers when adding new tests.
+- `test/helpers_test.go` contains AWS S3 helpers; `test/go.mod` references `terraform-aws-s3`. These are unused by the KMS test and should be replaced with KMS-specific helpers when adding new tests.
 - `install-tools.sh` includes AWS CLI installation; not needed for a GCP-only module.

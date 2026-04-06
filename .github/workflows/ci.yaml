@@ -69,7 +69,16 @@ jobs:
     strategy:
       matrix:
         example:
-          - examples/bucket/basic
+          - examples/basic
+          - examples/with-rotation
+          - examples/with-annual-rotation
+          - examples/asymmetric-sign
+          - examples/asymmetric-decrypt
+          - examples/mac-signing
+          - examples/hsm-protected
+          - examples/with-labels
+          - examples/with-destroy-schedule
+          - examples/complete
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -98,6 +107,7 @@ jobs:
       TF_VERSION: ${{ vars.TERRAFORM_VERSION || '1.3.0' }}
       GO_VERSION: ${{ vars.GO_VERSION || '1.21' }}
       GOOGLE_CLOUD_PROJECT: ${{ vars.GCP_PROJECT_ID }}
+      GCP_KMS_KEY_RING: ${{ vars.GCP_KMS_KEY_RING }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -129,13 +139,13 @@ jobs:
           go mod download
         working-directory: test
 
-      - name: Run Terratest - GCS Bucket Basic
-        id: gcs-bucket-basic-test
+      - name: Run Terratest - KMS Crypto Key Basic
+        id: kms-crypto-key-basic-test
         run: |
           set -o pipefail
-          go test -v -timeout 30m -run TestGCSBucketBasic \
-            ./gcs_bucket_basic_test.go ./helpers_test.go 2>&1 | tee test_output.txt
-          echo "## GCS Bucket Basic Test Results" >> $GITHUB_STEP_SUMMARY
+          go test -v -timeout 30m -run TestKMSCryptoKeyBasic \
+            ./kms_crypto_key_basic_test.go ./helpers_test.go 2>&1 | tee test_output.txt
+          echo "## KMS Crypto Key Basic Test Results" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat test_output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
@@ -208,4 +218,4 @@ jobs:
             @semantic-release/git@10.0.1
             conventional-changelog-conventionalcommits@9.1.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
