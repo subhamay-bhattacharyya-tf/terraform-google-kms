@@ -3,6 +3,7 @@
 ### 🚀 Features
 
 - [**breaking**] Replace GCS bucket module with Google KMS Crypto Key module
+- Implement KMS key ring management in tests and update CI configuration
 
 ### 🐛 Bug Fixes
 
@@ -10,4 +11,5 @@
 
 ### 📚 Documentation
 
+- Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
